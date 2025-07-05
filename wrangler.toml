@@ -1,6 +1,6 @@
 # Cloudflare Worker configuration
 
-name = "blog-cloudflare-worker"
+name = "security-blog"
 compatibility_date = "2025-05-26"
 
 [build]
