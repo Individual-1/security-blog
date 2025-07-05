@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <title>Thoughts on Supply Chain Security // security blogspam</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.147.9">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Yamada Taro" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="/css/main.min.5b1fcc8902588589c4767187402a3c29f8b8d7a6fdef6d9f8f77045bb0d14fee.css" />
+    
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Thoughts on Supply Chain Security">
+  <meta name="twitter:description" content="Supply chain has become a hot topic in the last few years, with high-profile vulnerabilities such as log4j leaving companies scrambling to patch in an ad-hoc manner.
+For many, this exercise served as a wake up call; companies were made aware of just how little they knew about their supply chains. Some have tried to address this by building as much software in-house as possible (which still leaves a degree of insider risk), but that scales poorly and comes with its own caveats.
+As such, usage of some degree of OSS and vendor code is inevitable, and is in fact becoming reality within even the most not-built-here of big tech. Because of this, it is important that engineers think about the implications of bringing in these unknown trust packages and how they may affect the rest of the build and deploy process, not only for OSS and vendor code, but for their own code as well.
+Unfortunately, there is no single correct way to approach these problems, since so much of it depends on your tolerance for risk and what kind of attacker profile fits into your threat model. Instead of trying to dictate the one true way, I’ll discuss some building blocks which have proven useful for controlling risk, such as methods for increased transparency and more granular controls to guarantee the integrity of our supply chain. Because this isn’t a one size fits all approach, it’s up to the individual to assess what mitigations suit their needs. To support that, we’ll outline situations in which each may be applicable. What makes sense for a megacorp doesn’t necessarily scale down for a personal project.">
+
+    <meta property="og:url" content="http://localhost:1313/posts/thoughts-on-supply-chain-security/">
+  <meta property="og:site_name" content="security blogspam">
+  <meta property="og:title" content="Thoughts on Supply Chain Security">
+  <meta property="og:description" content="Supply chain has become a hot topic in the last few years, with high-profile vulnerabilities such as log4j leaving companies scrambling to patch in an ad-hoc manner.
+For many, this exercise served as a wake up call; companies were made aware of just how little they knew about their supply chains. Some have tried to address this by building as much software in-house as possible (which still leaves a degree of insider risk), but that scales poorly and comes with its own caveats.
+As such, usage of some degree of OSS and vendor code is inevitable, and is in fact becoming reality within even the most not-built-here of big tech. Because of this, it is important that engineers think about the implications of bringing in these unknown trust packages and how they may affect the rest of the build and deploy process, not only for OSS and vendor code, but for their own code as well.
+Unfortunately, there is no single correct way to approach these problems, since so much of it depends on your tolerance for risk and what kind of attacker profile fits into your threat model. Instead of trying to dictate the one true way, I’ll discuss some building blocks which have proven useful for controlling risk, such as methods for increased transparency and more granular controls to guarantee the integrity of our supply chain. Because this isn’t a one size fits all approach, it’s up to the individual to assess what mitigations suit their needs. To support that, we’ll outline situations in which each may be applicable. What makes sense for a megacorp doesn’t necessarily scale down for a personal project.">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-02-20T00:00:00+00:00">
+    <meta property="article:modified_time" content="2023-02-20T00:00:00+00:00">
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="/"><img class="app-header-avatar" src="/avatar.jpg" alt="Yamada Taro" /></a>
+      <span class="app-header-title">security blogspam</span>
+      <p>Unstructured thoughts on security topics</p>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Thoughts on Supply Chain Security</h1>
+      <div class="post-meta">
+        <div>
+          <svg class="icon icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          Feb 20, 2023
+        </div>
+        <div>
+          <svg class="icon icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>clock</title><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          12 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p>Supply chain has become a hot topic in the last few years, with high-profile vulnerabilities such as log4j leaving companies scrambling to patch in an ad-hoc manner.</p>
+<p>For many, this exercise served as a wake up call; companies were made aware of just how little they knew about their supply chains. Some have tried to address this by building as much software in-house as possible (which still leaves a degree of insider risk), but that scales poorly and comes with its own caveats.</p>
+<p>As such, usage of some degree of OSS and vendor code is inevitable, and is in fact becoming reality within even the most not-built-here of big tech. Because of this, it is important that engineers think about the implications of bringing in these unknown trust packages and how they may affect the rest of the build and deploy process, not only for OSS and vendor code, but for their own code as well.</p>
+<p>Unfortunately, there is no single correct way to approach these problems, since so much of it depends on your tolerance for risk and what kind of attacker profile fits into your threat model. Instead of trying to dictate <strong>the one true way</strong>, I&rsquo;ll discuss some building blocks which have proven useful for controlling risk, such as methods for increased transparency and more granular controls to guarantee the integrity of our supply chain. Because this isn&rsquo;t a one size fits all approach, it&rsquo;s up to the individual to assess what mitigations suit their needs. To support that, we&rsquo;ll outline situations in which each may be applicable. What makes sense for a megacorp doesn&rsquo;t necessarily scale down for a personal project.</p>
+<h2 id="understanding-risk">Understanding Risk</h2>
+<p>Before we dive into specific controls, it would be useful to discuss a bit what exactly the risks we face are and why thinking about them is important. We will frame these in the context of a Python project to provide a frame of reference, but the concepts apply to any language or provider.</p>
+<h3 id="toolchain-and-packaging-risk">Toolchain and packaging risk</h3>
+<p>So given our theoretical Python project, what can go wrong? Lets start with the most basic example: Hello World.</p>
+<pre tabindex="0"><code>def main():
+    print(&#39;Hello World&#39;)
+</code></pre><p>Surely nothing could go wrong here, it is only two lines! Well, think about what is actually going on when you are running this program and how we package it for delivery.</p>
+<p>As an interpreted language, we&rsquo;ll need a Python interpreter to actually execute this program. Along with that comes some implementation of the Python standard library providing a number of common functionalities and helpers like the <code>print</code> function.</p>
+<p>What if our interpreter is compromised? Or there is a vulnerability in the standard library? If we vet the interpreter once, how do we know we get the same binary later even if we try downloading the same version?</p>
+<p>As you can see, even with the simplest of programs there are hidden supply-chain and environment risks. This doesn&rsquo;t mean you have to obsess over every single layer of your execution and build stack though. Consider your threat model and personal risk profile and use that to figure out where you&rsquo;re comfortable.</p>
+<h3 id="first-and-third-party-dependency-risk">First and third-party dependency risk</h3>
+<p>Let&rsquo;s add a bit more complexity and import some more packages into our program to see how it changes our risk profile.</p>
+<pre tabindex="0"><code>from random import random
+
+def main():
+    print(&#39;Random float: {}&#39;.format(random()))
+</code></pre><p>We&rsquo;ll start with a dependency from the standard library. We import <code>random</code> and use it to generate a float which we then print out. Not too much going on here, but now we have pulled in a module which wouldn&rsquo;t have been included otherwise. As a part of the standard library there should presumably be some form or additional confidence in the quality and integrity of the code, but as a matter of course we should still question it.</p>
+<p>How do we know this code isn&rsquo;t vulnerable to some exploit? Or that it isn&rsquo;t itself backdoored? This ties a bit into our concerns from the first section as this is included along with the toolchain when you download Python, but is a separate module which the interpreter will import from the installation.</p>
+<pre tabindex="0"><code>&gt; pip install random2
+
+from random2 import Random
+
+&#39;&#39;&#39;
+I don&#39;t actually know if this would work, random2 docs are limited and I didn&#39;t want to install the module just for this example
+&#39;&#39;&#39;
+def main():
+    print(&#39;Random float: {}&#39;.format(Random()))
+</code></pre><p>This time we install a random number generator with pip and use that to generate a number. This is our first time working with code that wasn&rsquo;t written by us or a Python contributor so what does that mean for us? Is this a developer that we can trust? Do they have robust code review and contribution policies? And so on.</p>
+<p>We also need to consider the dependency retrieval process. By default pip does not verify integrity of packages and may run arbitrary code as part of building source-only distributions. This combined with the usual network security issues means that just by pulling in an external dependency we&rsquo;re opening ourselves up to network integrity, package integrity, and untrusted code concerns.</p>
+<h3 id="source-code-storage">Source code storage</h3>
+<p>So far we have just been writing all our code into a file on our local filesystem. This is fine for local prototyping and testing, but as soon as we want to start working with someone else or maintain a history of changes then we start to have problems. There are a number of options for revision control systems, but not all are created equal or provide the same guarantees.</p>
+<p>For example, what happens if our disk crashes? Or someone compromises our dev environment and makes their own changes to the code? It is important to keep in mind both the availability and resiliency aspects when using revision control.</p>
+<h3 id="manual-build-and-deploy">Manual build and deploy</h3>
+<p>The next step after we reach the minimum viable product phase is to actually get everything put together and out there. We&rsquo;ll start by doing it all manually, both the build and deploy.</p>
+<p>Python doesn&rsquo;t have a compile step so let&rsquo;s imagine we have a C++ codebase instead. Because we&rsquo;re being agile we don&rsquo;t have time to write a Makefile or shell script to build things so we just keep typing out our command on the CLI.</p>
+<pre tabindex="0"><code>&gt; clang++ -Wall example.cc -o example.out
+</code></pre><p>To deploy our binary we email it to our devops person, who then SSH&rsquo;s into our prod server and drops it in place.</p>
+<p>We have already covered toolchain concerns in an earlier section (reproducible builds, untrusted toolchain, etc), so let&rsquo;s think about the deploy aspect. For starters, email isn&rsquo;t a particular secure method of transferring a file, and we&rsquo;re relying on a human to get it where it needs to go. Think about what might happen if an external attacker could tamper with your delivery mechanism (and subsequently the deployed binary), then extend that idea to the greater access an internal adversary might have.</p>
+<p>We&rsquo;re also having someone log directly into our prod server and mess around, which should throw up another million red flags. What stops them from doing something other than deploying? Or what do we do if something goes wrong with the environment?</p>
+<h3 id="adding-cicd">Adding CI/CD</h3>
+<p>We certainly could keep rebuilding manually off a dev machine and then FTP&rsquo;ing that over to our prod server forever, but we heard about some fancy tools that could do it all for us at the press of a button so let&rsquo;s  enter the 21st century and integrate into a CI/CD system.</p>
+<p>We won&rsquo;t call out any particular provider or software stack here, and instead just lay out some common properties/assumptions and work from that.</p>
+<p>Our theoretical CI/CD provider:</p>
+<ul>
+<li>Is a third-party provider</li>
+<li>Has access to our source repository</li>
+<li>Has some credential storage or retrieval mechanism (for repo and deploy environment access)</li>
+<li>Executes arbitrary code as defined by some configuration file in our repo (ostensibly to build our project)</li>
+</ul>
+<p>Given these parameters, let&rsquo;s think through what our risk profile looks like here.</p>
+<p>We have all of the usual 3p risks here except amplified due to us trusting them with our sensitive source code and access to our production environment. Even if we don&rsquo;t use a 3p provider and run a hosted instance of a CI/CD toolchain we still face a lot of the same issues, just exposed to a different audience.</p>
+<p>So if someone has compromised our CI/CD infrastructure, what can they do? With source access we face potential info leaks or malicious source modification. If we configured credentials for repo/env access then we risk those getting leaked as well. Lastly, if an attacker has compromised enough to make changes to the build or deploy configurations then arbitrary code execution or other similar attacks become very real possibilities.</p>
+<h2 id="controls">Controls</h2>
+<p>With that (non-comprehensive) exercise out of the way, let&rsquo;s talk a bit about what we can do to mitigate some of these risks.</p>
+<h3 id="package-version-locking">Package Version Locking</h3>
+<p>As discussed in the [First and third-party dependency risk] section, one major risk of 3p dependencies is the fetching of an upstream package of unknown provenance. Even if we reviewed the library code and knew it was safe, that only matters for the particular version we looked at. A common supply-chain attack is to compromise the upstream dependency provider and upload malicious updates to dependencies, causing users to download the compromised version.</p>
+<p>So how do we ensure that we get the same version each time? Most toolchains have some form of version locking whereby you can specify a version to download. This ensures (sorta) that you always get the same known revision.</p>
+<p>This control is low-effort and easy to implement, and is accordingly suitable for projects of all sizes.</p>
+<h3 id="package-integrity-check">Package Integrity Check</h3>
+<p>Even if we lock the package version, what happens if someone compromises the upstream and just replaces a known version of a dependency? Or maybe our transport layer gets man-in-the-middled and our known module version replaced with a malicious one on the fly.</p>
+<p>This is where checksumming and integrity checks come into play. Some toolchains support checksums or signature checking for packages, giving us a mechanism for verifying that we have indeed downloaded what we expected.</p>
+<p>If supported by your environment, this control is also low-effort and easy to implement. It is suitable for projects of all sizes.</p>
+<h3 id="dependency-vendoring">Dependency Vendoring</h3>
+<p>Version pinning and checksumming give us good baseline guarantees but don&rsquo;t do a lot of good if we still want to be up and running if something does go wrong.</p>
+<p>If you can manage the maintenance and process overhead, then one solution to this is to vendor your dependencies. This means keeping a known good copy of the code or compiled library you rely on in your project, such that you always have a safe revision to use. Some toolchains can even handle all of this for you by automatically downloading and storing all dependencies in your repo as part of the build process, making it even easier.</p>
+<p>Of course this isn&rsquo;t foolproof if someone else can get control of your environment and just swap out your local copy, but it does help mitigate some of the remote compromise concerns.</p>
+<p>As alluded to, this also does have some tradeoffs you need to consider such as how difficult it is to adapt the vendored code to your project, or extra work required when updating the dependency.</p>
+<p>Given these caveats, this mitigation is not necessarily suitable to all projects but can be useful if you want that additional layer of protection.</p>
+<h3 id="software-bill-of-materials-sbom">Software Bill of Materials (SBOM)</h3>
+<p>Every mitigation we have discussed so far has been to protect ourselves against malicious dependencies by ensuring we always use a known good version, but what happens if someone finds a vulnerability in our &ldquo;known good&rdquo; copy and we need to patch it? In theory we should be able to go into our project&rsquo;s lockfile and start bumping up dependency versions to patched revisions, but how do we know we got them all?</p>
+<p>This is where the idea of an SBOM comes into play. A Software Bill of Materials serves as an inventory of a given component&rsquo;s relationships with its dependencies. In theory if you have comprehensive SBOMs for your project and all of its dependencies have similarly comprehensive SBOMs then you can just crawl the tree to find usages of the vulnerable library and know exactly what you need to update.</p>
+<p>Of course, this comes with pretty significant up-front setup time if starting from scratch. As time passes and more OSS projects embrace the SBOM concept it may become more straightforward to jump in and get started, but for now it will take a fair amount of dedicated effort.</p>
+<p>With that in mind, I would suggest this mainly for large, well-resourced projects which can afford the effort.</p>
+<h3 id="reproducible-builds">Reproducible Builds</h3>
+<p>With everything we have done so far we have developed a pretty strong baseline for our project, and we can start thinking about some add-on efforts.</p>
+<p>The first of these is the concept of reproducible builds. Reproducible builds are the idea that you can run a build with a given set of parameters and always get the same output, hence the reproducible. By &ldquo;same output&rdquo; we don&rsquo;t mean just functionally similar (like if we changed out the optimization level), but a step further and getting a bit-exact reproduction (less any metadata).</p>
+<p>This capability may not seem too useful on the face of it, but being able to generate the same output forever means we can verify a given build once and continue to have a known good even if we need to re-build it. As projects scale up and the need for consistency and reliability increase, the value of reproducible builds becomes readily apparent.</p>
+<p>In most build systems reproducible builds are non-trivial to set up. Unless you really need this behavior, or are starting a greenfield project and think you may get to this point then don&rsquo;t worry about it.</p>
+<h3 id="hermetic-builds">Hermetic Builds</h3>
+<p>If we think of reproducible builds as applying to the output of our project, then we can apply the same idea to our build environment to get the concept of hermetic builds. A hermetic build is a build in which we can generate and retrieve the same toolchain revision and any other supporting tooling as defined by our project to ensure that we get the same environment every time.</p>
+<p>These tend to go hand in hand with reproducible builds out of necessity (different toolchains revisions will generate different outputs), and is the other piece of the puzzle to really getting consistent control and guarantees around our build process.</p>
+<p>This is something that can be done manually with some difficulty if you can capture and regenerate a comprehensive snapshot of your environment, or via some tools such as Google&rsquo;s Blaze/Bazel.</p>
+<p>As with reproducible builds, don&rsquo;t worry about this if you don&rsquo;t need it. It is nice to have for casual projects and development, but not necessarily to the degree of refactoring everything into a build system which supports it.</p>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

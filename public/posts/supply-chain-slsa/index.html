@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <title>Supply Chain Security and SLSA // security blogspam</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.147.9">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Yamada Taro" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="/css/main.min.5b1fcc8902588589c4767187402a3c29f8b8d7a6fdef6d9f8f77045bb0d14fee.css" />
+    
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Supply Chain Security and SLSA">
+  <meta name="twitter:description" content="In Thoughts on Supply Chain we talked a bit about how to think about supply-chain security in the abstract.
+In this post, we’ll anchor our discussion against a set of guidelines called SLSA.">
+
+    <meta property="og:url" content="http://localhost:1313/posts/supply-chain-slsa/">
+  <meta property="og:site_name" content="security blogspam">
+  <meta property="og:title" content="Supply Chain Security and SLSA">
+  <meta property="og:description" content="In Thoughts on Supply Chain we talked a bit about how to think about supply-chain security in the abstract.
+In this post, we’ll anchor our discussion against a set of guidelines called SLSA.">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-03-26T00:00:00+00:00">
+    <meta property="article:modified_time" content="2023-03-26T00:00:00+00:00">
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="/"><img class="app-header-avatar" src="/avatar.jpg" alt="Yamada Taro" /></a>
+      <span class="app-header-title">security blogspam</span>
+      <p>Unstructured thoughts on security topics</p>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Supply Chain Security and SLSA</h1>
+      <div class="post-meta">
+        <div>
+          <svg class="icon icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          Mar 26, 2023
+        </div>
+        <div>
+          <svg class="icon icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>clock</title><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          8 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p>In <a href="http://localhost:1313/posts/thoughts-on-supply-chain-security/">Thoughts on Supply Chain</a> we talked a bit about how to think about supply-chain security in the abstract.</p>
+<p>In this post, we&rsquo;ll anchor our discussion against a set of guidelines called <a href="https://slsa.dev/">SLSA</a>.</p>
+<p>As the <a href="https://slsa.dev/spec/v0.1/">introductory page</a> puts it:</p>
+<blockquote>
+<p>SLSA is a set of standards and technical controls you can adopt to improve artifact integrity, and build towards completely resilient systems.
+It’s not a single tool, but a step-by-step outline to prevent artifacts being tampered with and tampered artifacts from being used,
+and at the higher levels, hardening up the platforms that make up a supply chain.</p></blockquote>
+<p>For our purposes, we care primarily about the different pillars (Build, Source, Deps) SLSA defines, as well as the level requirements for each. Every risk we defined maps to an SLSA pillar, and each control an incremental step towards the next level of SLSA compliance.</p>
+<h2 id="slsa-pillars">SLSA Pillars</h2>
+<p>In this section we&rsquo;ll go through each pillar of the SLSA framework and call back to the example we used in the first post. We do this to give each theoretical risk we defined a concrete backing in SLSA guidance.</p>
+<h3 id="source">Source</h3>
+<p><a href="https://slsa.dev/spec/v0.1/requirements#source-requirements">SLSA Requirements</a></p>
+<ul>
+<li>Version controlled</li>
+<li>Verified history</li>
+<li>Retained indefinitely</li>
+<li>Two-person reviewed</li>
+</ul>
+<p>The Source pillar focuses on risks to our source code storage and how we can maintain the integrity (both past and present) of the code base.</p>
+<p>In our example, we talked a bit about revision control in the <a href="http://localhost:1313/posts/thoughts-on-supply-chain-security/#source-code-storage">Source code storage</a> section. We mentioned a couple situations which could compromise the availability and integrity of the code via disk failure or system compromise, and suggested utilizing a resilient revision control system to help defend against the former and help mitigate the effects of the latter. However, we didn&rsquo;t come up with anything to prevent the compromised commit in the first place. Fortunately, SLSA has a requirement which will help bridge that gap.</p>
+<p>But first, before we get to that recommendation, let&rsquo;s take a look at how we stack up against the other requirements.</p>
+<p>For the first item &ldquo;Version controlled&rdquo;, we get that by virtue of using a revision control system in the first place. If we had stuck with our old design of keeping the project on disk and emailing things around we would have failed this requirement, but by using git or Perforce or any other option we tick this box.</p>
+<p>With the second item &ldquo;Verified history&rdquo;, things become a bit less clear. This requirement asks that we timestamp and strongly authenticate some party associated with each changelist. This may be something which our revision control system provides, but depends heavily on our configuration. We&rsquo;ll need to be sure to configure it in such a way that we clearly specify which identities have been strongly authenticated on a per-commit basis. An example of where this may not hold is with default git configurations, where a user can specify any email and username to be associated with a commit.</p>
+<p>For the third item &ldquo;Retained indefinitely&rdquo; we get into the configuration component again. We must ensure that we configure our revision control system to maintain all history for the required time period, and prevent deletion or rewrites. Some revision control systems such as git allow for mutable history by default, and would need further configuration to prevent such changes.</p>
+<p>Finally we get to the requirement alluded to before. With &ldquo;Two-person reviewed&rdquo;, we increase the bar to actually getting malicious code into the repository. This was not something we covered in the original post, leaving that gap. With this requirement in place we make it so that malicious compromise needs to have an insider supporting them or otherwise compromise multiple identities with permission to modify the repository.</p>
+<h3 id="build">Build</h3>
+<p><a href="https://slsa.dev/spec/v0.1/requirements#build-requirements">SLSA Requirements</a></p>
+<ul>
+<li>Scripted build</li>
+<li>Build service</li>
+<li>Build as code</li>
+<li>Ephemeral environment</li>
+<li>Isolated</li>
+<li>Parameterless</li>
+<li>Hermetic</li>
+<li>Reproducible</li>
+</ul>
+<p>The Build pillar focuses on securing the build process and ensuring the safety of our generated artifact.</p>
+<p>Our risk discussion in the <a href="http://localhost:1313/posts/thoughts-on-supply-chain-security/#manual-build-and-deploy">Manual build and deploy</a> and <a href="http://localhost:1313/posts/thoughts-on-supply-chain-security/#adding-cicd">Adding CI/CD</a> map most closely to this pillar. In those sections we went from typing out our compile command each time to automating the whole build with a continuous integration system. This represents a rather significant shift, and that is reflected in how many SLSA requirements will be covered in that gap.</p>
+<p>Starting from the top with &ldquo;Scripted build&rdquo;. This requirement asks that we make our builds consistently re-runnable by scripting out the build steps in a Makefile or some other method. We did not start with this as we were retyping our compile command by hand, but in moving to a build framework or CI/CD setup we get the reproducibility from having to tell our toolchain how to build our project.</p>
+<p>The second requirement &ldquo;Build service&rdquo; is also a freebie when it comes to our CI/CD setup (unless we are running an instance of the CI/CD tooling on our workstation). This requirement just asks that we not run the build process on our local system, or at least not for the artifacts we&rsquo;ll be deploying.</p>
+<p>Third we have &ldquo;Build as code&rdquo;. This asks that we define our build steps and process as some form of text or other definition which is revision controlled. This allows us to verify the steps which are taken and control changes to them through defined means. Most CI/CD systems will support some form of this, and it is just a matter of using the right configuration with our desired toolchain to check this box.</p>
+<p>Next, we have &ldquo;Ephemeral environment&rdquo;. This requirement states that we should run the build process in an instance or environment solely for that build invocation. This should also be a capability of most CI/CD frameworks, but will depend on the user configuring them properly.</p>
+<p>After that we have &ldquo;Isolated&rdquo;. Somewhat related to the prior item, this requires that our build process must be self-contained and uninfluencable by other build instances or infrastructure. Again, this is going to vary from framework to framework and will depend on us configuring it properly.</p>
+<p>Similar to the build definition requirement, we have &ldquo;Parameterless&rdquo;. This requirement states that our build should be almost entirely defined in code and not be influenced by defineable variables or such outside of some basic items. Meeting this requirement will rely on us being careful not to rely on such parameterized functionalities when writing our build file definition.</p>
+<p>Second to last is the &ldquo;Hermetic&rdquo; requirement. This asks that our build process be run in an entirely self-contained manner with all references being defined beforehand in an immutable manner. This is a tricky requirement to meet, and doing so will require configuration specific to whichever CI/CD framework is being used.</p>
+<p>Lastly is the trickiest of the bunch, &ldquo;Reproducible&rdquo;. With this requirement, we must ensure that two runs of the same build inputs should result in bit-exact outputs. This isn&rsquo;t something that is necessarily feasible with all (or even most) CI/CD frameworks or local build tooling, and requires thought if we actually want to meet it. On the local build side, this is where we could use something like Bazel to get more cleanly defined hermetic and reproducible builds.</p>
+<h3 id="provenance">Provenance</h3>
+<p><a href="https://slsa.dev/spec/v0.1/requirements#provenance-requirements">SLSA Requirements</a></p>
+<ul>
+<li>Available</li>
+<li>Authenticated</li>
+<li>Service generated</li>
+<li>Non-falsifiable</li>
+<li>Dependencies complete</li>
+</ul>
+<p>Content Requirements</p>
+<ul>
+<li>Identifies artifact</li>
+<li>Identifies builder</li>
+<li>Identifies build instructions</li>
+<li>Identifies source code</li>
+<li>Identifies entry point</li>
+<li>Includes all build parameters</li>
+<li>Includes all transitive dependencies</li>
+<li>Includes reproducible info</li>
+<li>Includes metadata</li>
+</ul>
+<p>Provenance is a bit of an outlier pillar in that it doesn&rsquo;t cover a specific part of the process but rather the auditability of the whole flow.</p>
+<p>Accordingly, the <a href="http://localhost:1313/posts/thoughts-on-supply-chain-security/#toolchain-and-packaging-risk">Toolchain and packaging risk</a> and <a href="http://localhost:1313/posts/thoughts-on-supply-chain-security/#first-and-third-party-dependency-risk">First and third-party dependency risk</a> sections fall under this category. To sum them up without repeating everything, we discussed the issues with relying on different kinds of 3p packages, how to ensure we are getting what we expect, and what guarantees different mitigation options would get us.</p>
+<p>The direct SLSA requirements are all fairly specific to provenance metadata, which is not something we covered at all so we&rsquo;ll gloss over those and just say we fail all of thos requirements. Of more interest to us are the content requirements for the provenance declarations, which we can partially cover with our mitigations. Given the number of content requirements, we&rsquo;ll focus only on those which we can comment on with our risk assessment, and refer the remainder for future analysis if desired.</p>
+<p>The first requirement we can speak to is &ldquo;Identifies artifact&rdquo;. This asks that we cryptographically identify the output artifact. For our purposes this is partially covered by our usage and discussion of signature verifying dependencies. We ensure we are getting what we want dependency-wise by storing and verifying a cryptographic signature for each dependency, which can be thought of as verifying the provenance of that dependency (although it says nothing about their build process or any of the other tenets we have been talking about).</p>
+<p>The second requirement is &ldquo;Identifies entry point&rdquo;. This isn&rsquo;t directly covered by our discussion, but is touched upon as part of our usage of version pinning and some version specifiers depending on the language. Some language ecosystems will include upstream information as part of a version tag, whether it is a git commit hash or other identifier which can be mapped back to a specific point in time. Not a perfect solution, but something we can get part of the benefit of.</p>
+<p>The last requirement we can partially cover is &ldquo;Includes all transitive dependencies&rdquo;. Some manifest formats for language toolchains will automatically include all transitive dependencies with version pinning and signature verification. This is the case for Golang, and may be available for other languages either via the standard package management tooling or via supplementary frameworks.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Now that we have mapped some of our discussions back to a much more concretely defined framework, hopefully you have a better understanding of just how supply-chain security problems fit together and what an end-to-end solution may look like. There are certainly options and frameworks other than SLSA, but for our purposes it provides a good mix of guidance and definition without being too prescriptive such that we can define our own solution.</p>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

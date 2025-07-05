@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>security blogspam</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content on security blogspam</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 29 Mar 2023 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>LLMs and Security: The user&#39;s perspective </title>
+      <link>http://localhost:1313/posts/llms-and-security-1/</link>
+      <pubDate>Wed, 29 Mar 2023 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/llms-and-security-1/</guid>
+      <description>&lt;p&gt;LLMs have been a hot topic these last few months with OpenAI&amp;rsquo;s ChatGPT, Google&amp;rsquo;s Bard, and Meta&amp;rsquo;s LLaMA all being released (or leaked) for the general public to play with. Plenty has been said about the usefulness and applications of this technology, but less so on the security side of things.&lt;/p&gt;&#xA;&lt;p&gt;In this post, I aim to provide a brief threat model of some common LLM use cases from the user&amp;rsquo;s perspective and what considerations a user will need to take when utilizing or integrating with these models.&lt;/p&gt;&#xA;&lt;p&gt;Future posts will cover other aspects such as integrators (first and third-party), and for running the model infrastructure itself.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Supply Chain Security and SLSA</title>
+      <link>http://localhost:1313/posts/supply-chain-slsa/</link>
+      <pubDate>Sun, 26 Mar 2023 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/supply-chain-slsa/</guid>
+      <description>&lt;p&gt;In &lt;a href=&#34;http://localhost:1313/posts/thoughts-on-supply-chain-security/&#34;&gt;Thoughts on Supply Chain&lt;/a&gt; we talked a bit about how to think about supply-chain security in the abstract.&lt;/p&gt;&#xA;&lt;p&gt;In this post, we&amp;rsquo;ll anchor our discussion against a set of guidelines called &lt;a href=&#34;https://slsa.dev/&#34;&gt;SLSA&lt;/a&gt;.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Thoughts on Supply Chain Security</title>
+      <link>http://localhost:1313/posts/thoughts-on-supply-chain-security/</link>
+      <pubDate>Mon, 20 Feb 2023 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/thoughts-on-supply-chain-security/</guid>
+      <description>&lt;p&gt;Supply chain has become a hot topic in the last few years, with high-profile vulnerabilities such as log4j leaving companies scrambling to patch in an ad-hoc manner.&lt;/p&gt;&#xA;&lt;p&gt;For many, this exercise served as a wake up call; companies were made aware of just how little they knew about their supply chains. Some have tried to address this by building as much software in-house as possible (which still leaves a degree of insider risk), but that scales poorly and comes with its own caveats.&lt;/p&gt;&#xA;&lt;p&gt;As such, usage of some degree of OSS and vendor code is inevitable, and is in fact becoming reality within even the most not-built-here of big tech. Because of this, it is important that engineers think about the implications of bringing in these unknown trust packages and how they may affect the rest of the build and deploy process, not only for OSS and vendor code, but for their own code as well.&lt;/p&gt;&#xA;&lt;p&gt;Unfortunately, there is no single correct way to approach these problems, since so much of it depends on your tolerance for risk and what kind of attacker profile fits into your threat model. Instead of trying to dictate &lt;strong&gt;the one true way&lt;/strong&gt;, I&amp;rsquo;ll discuss some building blocks which have proven useful for controlling risk, such as methods for increased transparency and more granular controls to guarantee the integrity of our supply chain. Because this isn&amp;rsquo;t a one size fits all approach, it&amp;rsquo;s up to the individual to assess what mitigations suit their needs. To support that, we&amp;rsquo;ll outline situations in which each may be applicable. What makes sense for a megacorp doesn&amp;rsquo;t necessarily scale down for a personal project.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

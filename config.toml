@@ -1,0 +1,13 @@
+baseURL = "https://blog.guard.page"
+title = "security blogspam"
+theme = "m10c"
+pagination.pagerSize = 8
+
+[author]
+  name = "Yamada Taro"
+
+[params]
+  author = "Yamada Taro"
+  dateFormat = "2006-01-02"
+  description = "Unstructured thoughts on security topics"
+  menu_item_separator = " - "

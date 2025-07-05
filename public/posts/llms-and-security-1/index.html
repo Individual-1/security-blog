@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <title>LLMs and Security: The user&#39;s perspective  // security blogspam</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.147.9">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Yamada Taro" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="/css/main.min.5b1fcc8902588589c4767187402a3c29f8b8d7a6fdef6d9f8f77045bb0d14fee.css" />
+    
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="LLMs and Security: The user&#39;s perspective ">
+  <meta name="twitter:description" content="LLMs have been a hot topic these last few months with OpenAI’s ChatGPT, Google’s Bard, and Meta’s LLaMA all being released (or leaked) for the general public to play with. Plenty has been said about the usefulness and applications of this technology, but less so on the security side of things.
+In this post, I aim to provide a brief threat model of some common LLM use cases from the user’s perspective and what considerations a user will need to take when utilizing or integrating with these models.
+Future posts will cover other aspects such as integrators (first and third-party), and for running the model infrastructure itself.">
+
+    <meta property="og:url" content="http://localhost:1313/posts/llms-and-security-1/">
+  <meta property="og:site_name" content="security blogspam">
+  <meta property="og:title" content="LLMs and Security: The user&#39;s perspective ">
+  <meta property="og:description" content="LLMs have been a hot topic these last few months with OpenAI’s ChatGPT, Google’s Bard, and Meta’s LLaMA all being released (or leaked) for the general public to play with. Plenty has been said about the usefulness and applications of this technology, but less so on the security side of things.
+In this post, I aim to provide a brief threat model of some common LLM use cases from the user’s perspective and what considerations a user will need to take when utilizing or integrating with these models.
+Future posts will cover other aspects such as integrators (first and third-party), and for running the model infrastructure itself.">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-03-29T00:00:00+00:00">
+    <meta property="article:modified_time" content="2023-03-29T00:00:00+00:00">
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="/"><img class="app-header-avatar" src="/avatar.jpg" alt="Yamada Taro" /></a>
+      <span class="app-header-title">security blogspam</span>
+      <p>Unstructured thoughts on security topics</p>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">LLMs and Security: The user&#39;s perspective </h1>
+      <div class="post-meta">
+        <div>
+          <svg class="icon icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          Mar 29, 2023
+        </div>
+        <div>
+          <svg class="icon icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>clock</title><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          5 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p>LLMs have been a hot topic these last few months with OpenAI&rsquo;s ChatGPT, Google&rsquo;s Bard, and Meta&rsquo;s LLaMA all being released (or leaked) for the general public to play with. Plenty has been said about the usefulness and applications of this technology, but less so on the security side of things.</p>
+<p>In this post, I aim to provide a brief threat model of some common LLM use cases from the user&rsquo;s perspective and what considerations a user will need to take when utilizing or integrating with these models.</p>
+<p>Future posts will cover other aspects such as integrators (first and third-party), and for running the model infrastructure itself.</p>
+<h2 id="defining-our-target">Defining our target</h2>
+<p>The first thing we want to do here is to scope and define what exactly our system under test and principals of interest are. In this case, we will consider a generic LLM run on a corporation&rsquo;s hardware and accessible via API or web interface to a user providing prompts. This user will not be training the model themselves or feeding it large amounts of their own data as a training set (outside of what they provide via prompts). We will also consider the infrastructure in scope only to the degree that user data touches it.</p>
+<p>As we are thinking from the user&rsquo;s perspective, our adversaries will be other users or the LLM infrastructure itself, as well as any integrations the LLM may have on the backend. We will not be considering attacks against the LLM from the LLM&rsquo;s perspective, that will be saved for future articles.</p>
+<h2 id="risk-surfaces">Risk Surfaces</h2>
+<p>Given this target definition, let&rsquo;s think a bit about where risk may actually come from.</p>
+<p>Our primary interaction point will be the prompt API or interface by which we submit queries and receive responses. This interface may require some form of authentication and authorization via provided credentials.</p>
+<p>From the user&rsquo;s perspective, we feed in some data to this external interface, and get some magic out. This output will most likely be in plaintext, but for the sake of argument let&rsquo;s assume that it may be a binary blob as well.</p>
+<p>There may be other surfaces secondary to the LLM&rsquo;s function such as a billing or financial incentive interface, but we&rsquo;ll consider those to be out of scope as the threat model is the same as any other financial services company (assuming the LLM is not ingesting this financial data).</p>
+<h2 id="threats">Threats</h2>
+<p>Starting with the user&rsquo;s data, let&rsquo;s trace the path a user query may take through the system. We&rsquo;ll also cover how cross-customer or malicious integrations may influence things and what we should be cognizant of.</p>
+<p>First, we have the user&rsquo;s authentication and authorization to utilize the interface. This gives the hosting infrastructure the ability to tie a given query to some identifier (whether explicit via an authenticated principal, or implicit from anonymous assignment and request markers). We now have some potential ties between any questions or inputs we may be asking and ourselves, with only the company&rsquo;s privacy policy and compliance with legal requests preventing others from accessing it.</p>
+<p>The primary concern here would be the attribution aspect, whereby if we are sending sensitive or proprietary data it may be associated with us and have secondary reprecussions (as with providing extra data to any company, like DNA companies and selling results or social media working with authorities). Some companies like Google takes steps to anonymize and redact any sensitive information coming in to reduce liability and risk to customers, but this kind of behavior is not a given and also difficult to validate from the outside.</p>
+<p>Second, we have the query data itself. The contents of this message will be stored by the hosting infrastructure and potentially fed into the model and other analytics systems. We should consider that anything we send into the model will not remain private to us, whether intentionally or inadvertently like with ChatGPT&rsquo;s early authorization issues leading to queries being displayed to other users.</p>
+<p>We should assume that anything we input into this model will be accessible to other parties, and consider what the implications would be if the content of our queries were leaked (loss of IP, PII, etc). We should also be cognizant of our input being used as further training data, which would then expose it to other users if it is returned as a response.</p>
+<p>Last, is the data being returned as a response. Due to the black-box nature of a lot of LLM operations, we can&rsquo;t expect any real guarantees on the integrity, veracity, and safety of the data being returned. As a broad recommendation, users should consider the output of an LLM as untrusted data and potentially malicious and handle it accordingly. This is not only from the traditional malicious payload perspective whereby the returned info is designed to subvert our system protections, but also from the angle of the information being subtly wrong in a malicious manner.</p>
+<p>In short, LLMs are prone to hallucinations and are trained on a largely untrusted dataset. It will never be possible to fully curate a dataset to ensure that everything is verifiable truth or safe, and even if it were possible the general tendency of the models to string unexpected things together could very easily bypass that.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This has been a brief walkthrough of some threats the average user may face when working with an LLM. Because we heavily restricted the scope and interaction points we have fairly limited avenues for things to go wrong, but even with that simple interface it is important that we remain cognizant of just how many moving parts there are behind that simple prompt and what considerations we should take when making use of it.</p>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
