@@ -11,3 +11,7 @@ pagination.pagerSize = 8
   dateFormat = "2006-01-02"
   description = "Unstructured thoughts on security topics"
   menu_item_separator = " - "
+
+[caches]
+  [caches.images]
+    dir = ':cacheDir/images'
